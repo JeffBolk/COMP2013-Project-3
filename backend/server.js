@@ -36,18 +36,21 @@ server.get("/products", async (request, response) => {
 
 server.post("/add-product", async (request, response) => {
   const { productName, brand, image, price } = request.body;
+  const id = crypto.randomUUID();
   const product = new Product({
     productName,
     brand,
     price,
     image,
-    id: crypto.randomUUID(),
+    id,
   });
 
   try {
     await product
       .save()
-      .then((result) => response.status(201).send("Product added"));
+      .then((result) =>
+        response.status(201).send(`${productName} added\nwith id: ${id}`)
+      );
   } catch (error) {
     console.log(error.message);
   }
@@ -56,9 +59,10 @@ server.post("/add-product", async (request, response) => {
 server.delete("/products/:id", async (request, response) => {
   const { id } = request.params;
   try {
-    await Product.findByIdAndDelete(id).then((result) =>
-      response.status(200).send("Product deleted")
-    );
+    await Product.findByIdAndDelete(id).then((result) => {
+      console.log(result);
+      response.status(200).send(result);
+    });
   } catch (error) {
     console.log(error.message);
   }
@@ -75,7 +79,9 @@ server.patch("/products/:id", async (request, response) => {
       image,
       price,
       id,
-    }).then((result) => response.status(200).send("Product updated"));
+    }).then((result) =>
+      response.status(200).send(`${productName} edited\nwith id: ${prodId}`)
+    );
   } catch (error) {
     console.log(error.message);
   }

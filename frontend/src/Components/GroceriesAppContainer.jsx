@@ -157,7 +157,10 @@ export default function GroceriesAppContainer() {
       await axios
         .delete(`http://localhost:3000/products/${productId}`)
         .then((result) => {
-          setPostResponse(result.data);
+          console.log(result);
+          setPostResponse(
+            `${result.data.productName} deleted\n with id: ${result.data.id}`
+          );
         });
     } catch (error) {
       console.log(error.message);
