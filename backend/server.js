@@ -4,8 +4,12 @@ const port = 3000;
 const cors = require("cors");
 const mongoose = require("mongoose");
 const Product = require("./models/product");
+const User = require("./models/user");
+
 require("dotenv").config();
-const { DB_URI } = process.env;
+const { DB_URI, SECRET_KEY } = process.env;
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 server.use(cors());
 server.use(express.json());
@@ -24,6 +28,56 @@ mongoose
 
 server.get("/", (request, response) => {
   response.send("LIVE!");
+});
+
+// Login Route
+server.post("/login", async (request, response) => {
+  const { username, password } = request.body;
+  try {
+    // Find user
+    const user = await User.findOne({ username });
+
+    // If no user
+    if (!user) {
+      return response.status(404).send({ message: "User not found" });
+    }
+
+    // Match password
+    const match = await bcrypt.compare(password, user.password);
+
+    // If no match
+    if (!match) {
+      return response.status(403).send({ message: "Incorrect credentials" });
+    }
+
+    // Token
+    const jwtToken = jwt.sign({ id: user._id, username }, SECRET_KEY);
+  } catch (error) {
+    response.status(500).send({ message: error.message });
+  }
+});
+
+// Create New User Route
+server.post("/create-user", async (request, response) => {
+  const { username, password } = request.body;
+
+  // If username is unique, else send error
+  try {
+    // Encrypt password for database storage
+    const secretPassword = await bcrypt.hash(password, 15);
+
+    // Assign new user
+    const user = new User({
+      username,
+      password: secretPassword,
+    });
+
+    // Save new server
+    await user.save();
+    response.send({ message: "User Added Successfully " });
+  } catch (error) {
+    response.status(500).send({ message: "User Already Exists" });
+  }
 });
 
 server.get("/products", async (request, response) => {
