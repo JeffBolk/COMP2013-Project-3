@@ -1,4 +1,5 @@
 import QuantityCounter from "./QuantityCounter";
+import Cookies from "js-cookie";
 
 export default function ProductCard({
   productName,
@@ -28,17 +29,28 @@ export default function ProductCard({
       />
       <h3>{price}</h3>
       <button onClick={() => handleAddToCart(id)}>Add to Cart</button>
-      <button
-        id="edit-button"
-        onClick={() =>
-          handleEditProduct({ price, brand, productName, image, _id })
-        }
-      >
-        Edit
-      </button>
-      <button className="RemoveButton" onClick={() => handleDeleteProduct(_id)}>
-        Delete
-      </button>
+
+      {/*Using conditional statements to verify user Cookie is Admin*/}
+      {Cookies.get("user") == "admin" ? (
+        <>
+          <button
+            id="edit-button"
+            onClick={() =>
+              handleEditProduct({ price, brand, productName, image, _id })
+            }
+          >
+            Edit
+          </button>
+          <button
+            className="RemoveButton"
+            onClick={() => handleDeleteProduct(_id)}
+          >
+            Delete
+          </button>
+        </>
+      ) : (
+        <></>
+      )}
     </div>
   );
 }
