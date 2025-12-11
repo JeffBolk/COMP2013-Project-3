@@ -52,6 +52,7 @@ server.post("/login", async (request, response) => {
 
     // Token
     const jwtToken = jwt.sign({ id: user._id, username }, SECRET_KEY);
+    return response.status(201).send({ message: "User Authenticated", token: jwtToken});
   } catch (error) {
     response.status(500).send({ message: error.message });
   }
