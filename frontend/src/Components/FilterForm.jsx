@@ -18,7 +18,7 @@ export default function FilterForm({ handleFilterPrice }) {
           type="radio"
           name="filterPrice"
           id="1"
-          value={1}
+          value={0.99}
           onChange={handleFilterPrice}
         />
         <label htmlFor="1">{"< 1.00$"}</label>
@@ -28,7 +28,7 @@ export default function FilterForm({ handleFilterPrice }) {
           type="radio"
           name="filterPrice"
           id="2"
-          value={2}
+          value={1.99}
           onChange={handleFilterPrice}
         />
         <label htmlFor="2">{"< 2.00$"}</label>
@@ -38,7 +38,7 @@ export default function FilterForm({ handleFilterPrice }) {
           type="radio"
           name="filterPrice"
           id="4"
-          value={4}
+          value={3.99}
           onChange={handleFilterPrice}
         />
         <label htmlFor="4">{"< 4.00$"}</label>
@@ -48,7 +48,7 @@ export default function FilterForm({ handleFilterPrice }) {
           type="radio"
           name="filterPrice"
           id="6"
-          value={6}
+          value={5.99}
           onChange={handleFilterPrice}
         />
         <label htmlFor="6">{"< 6.00$"}</label>
@@ -58,7 +58,7 @@ export default function FilterForm({ handleFilterPrice }) {
           type="radio"
           name="filterPrice"
           id="9"
-          value={9}
+          value={8.99}
           onChange={handleFilterPrice}
         />
         <label htmlFor="9">{"< 9.00$"}</label>
