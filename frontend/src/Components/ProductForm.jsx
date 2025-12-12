@@ -5,25 +5,30 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
 export default function ProductForm() {
-  const [postResponse, setPostResponse] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
-  const navigate = useNavigate();
+  const [postResponse, setPostResponse] = useState(""); //State to track post response
+  const [isEditing, setIsEditing] = useState(false); //State to track if editing or adding product
+  const navigate = useNavigate(); //Navigate is used to redirect user to different pages
+  //State to track current user
   const [currentUser] = useState(() => {
-    const jwtToken = Cookies.get("jwt-authorization");
+    const jwtToken = Cookies.get("jwt-authorization"); //get jwt token from cookies
     if (!jwtToken) {
+      //if no token,
       return "";
     }
     try {
-      const decodedToken = jwtDecode(jwtToken);
+      const decodedToken = jwtDecode(jwtToken); //decode token
       return decodedToken.username;
     } catch {
       return "";
     }
   });
 
+  //State to track form data
   const [formData, setFormData] = useState(() => {
-    const jwtToken = Cookies.get("jwt-token");
+    const jwtToken = Cookies.get("jwt-token"); //get jwt token from cookies
     if (!jwtToken) {
+      //if no token,
+      //return empty form data
       setIsEditing(false);
       return {
         productName: "",
@@ -34,6 +39,7 @@ export default function ProductForm() {
         _id: "",
       };
     }
+    //If token exists, decode it and pre-fill form data for editing
     try {
       const decodedToken = jwtDecode(jwtToken);
       setIsEditing(true);
@@ -46,6 +52,7 @@ export default function ProductForm() {
         _id: decodedToken._id,
       };
     } catch {
+      //If error in decoding, return empty form data
       setIsEditing(false);
       return {
         productName: "",
@@ -57,24 +64,31 @@ export default function ProductForm() {
       };
     }
   });
+
+  //Redirect to add-product page if not editing
   useEffect(() => {
     if (!isEditing) {
       navigate("/add-product");
     }
   }, [isEditing]);
 
+  //Redirect to not authorized page if current user is not admin
   useEffect(() => {
     if (currentUser != "admin") {
       navigate("/not-authorized");
     }
   });
 
+  //Handlers
+
+  //Handler for form input changes
   const handleOnChange = (e) => {
     //console.log(e.target.value);
     setFormData({ ...formData, [e.target.name]: e.target.value });
     //console.log(formData);
   };
 
+  //Handler for form submission
   const handleOnSubmit = async (e) => {
     if (isEditing) {
       //console.log(formData)
@@ -104,6 +118,7 @@ export default function ProductForm() {
     }
   };
 
+  //Handler to update product
   const handleUpdateProduct = async () => {
     try {
       await axios

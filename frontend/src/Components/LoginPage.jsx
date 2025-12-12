@@ -5,6 +5,7 @@ import UserForm from "./UserForm";
 import Cookies from "js-cookie";
 
 export default function LoginPage() {
+  //State to track user form data
   const [userFormData, setUserFormData] = useState({
     username: "",
     password: "",
@@ -13,27 +14,33 @@ export default function LoginPage() {
 
   const navigate = useNavigate();
 
+  //Handlers
+
+  //A handler to login user
   const handleLogin = async () => {
     try {
       const response = await axios.post("http://localhost:3000/login", {
         ...userFormData,
       });
       setPostResponse(response.data.message);
+      //If login is successful, navigate to main page and set jwt-authorization cookie
       if (response.status === 201) {
         navigate("/main");
-        Cookies.set("jwt-authorization", response.data.token);
+        Cookies.set("jwt-authorization", response.data.token); //set jwt token in cookies
       }
     } catch (error) {
       setPostResponse(error.response.message || "Login Failed");
     }
   };
 
+  //Handler to track changes in user form inputs
   const handleOnChange = (e) => {
     setUserFormData((prevData) => {
       return { ...prevData, [e.target.name]: e.target.value };
     });
   };
 
+  //Handler for form submission
   const handleOnSubmit = (e) => {
     e.preventDefault();
     handleLogin();

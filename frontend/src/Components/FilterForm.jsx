@@ -1,3 +1,5 @@
+//This component renders a form with radio buttons to filter items based on price
+//It appears on the main page where users can select a price range to filter items
 export default function FilterForm({ handleFilterPrice }) {
   return (
     <div>

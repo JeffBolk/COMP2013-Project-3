@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+//This component is displayed when a user tries to access a page that does not exist
 export default function PageNotFound() {
   return (
     <div>

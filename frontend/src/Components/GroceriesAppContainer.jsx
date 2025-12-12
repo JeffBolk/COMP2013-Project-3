@@ -10,14 +10,16 @@ import axios from "axios";
 
 export default function GroceriesAppContainer() {
   /////////// States ///////////
-  const [productQuantity, setProductQuantity] = useState();
-  const [cartList, setCartList] = useState([]);
-  const [productList, setProductList] = useState([]);
+  const [productQuantity, setProductQuantity] = useState(); //State to track quantities of products
+  const [cartList, setCartList] = useState([]); //State to track products in the cart
+  const [productList, setProductList] = useState([]); //State to track all products
   const [postResponse, setPostResponse] = useState("");
-  const [productsDisplay, setProductsDisplay] = useState([]); // New state for filtered products
+  const [productsDisplay, setProductsDisplay] = useState([]); //New state for filtered products
+  //State to track current user
   const [currentUser] = useState(() => {
-    const jwtToken = Cookies.get("jwt-authorization");
+    const jwtToken = Cookies.get("jwt-authorization"); //get jwt token from cookies
     if (!jwtToken) {
+      //if no token, return empty string
       return "";
     }
     try {
@@ -31,13 +33,16 @@ export default function GroceriesAppContainer() {
   const navigate = useNavigate();
   //////////useEffect////////
 
+  //useEffect to fetch products from the database
   useEffect(() => {
-    handleProductsFromDB();
+    handleProductsFromDB(); //fetch products
     if (Cookies.get("jwt-token")) {
-      Cookies.remove("jwt-token");
+      //if there is a jwt-token cookie
+      Cookies.remove("jwt-token"); //remove it
     }
   }, [postResponse]);
 
+  //useEffect to check if user is authorized
   useEffect(() => {
     if (!currentUser) {
       navigate("/not-authorized");
@@ -45,17 +50,19 @@ export default function GroceriesAppContainer() {
   });
 
   ////////Handlers//////////
+  //Initialize product quantities to 0
   const initialProductQuantity = (prods) =>
     prods.map((prod) => {
       return { id: prod.id, quantity: 0 };
     });
 
+  //A handler to fetch products from the database
   const handleProductsFromDB = async () => {
     try {
       await axios.get("http://localhost:3000/products").then((result) => {
-        setProductList(result.data);
-        setProductsDisplay(result.data); // Initialize filtered products to show all products
-        setProductQuantity(initialProductQuantity(result.data));
+        setProductList(result.data); //Set all products
+        setProductsDisplay(result.data); //Initialize filtered products to show all products
+        setProductQuantity(initialProductQuantity(result.data)); //Set initial quantities to 0
       });
     } catch (error) {
       console.log(error.message);
@@ -80,20 +87,25 @@ export default function GroceriesAppContainer() {
     }
   };
 
+  //Handler to log out user and clear cookies
   const handleLogout = async () => {
     Cookies.remove("jwt-authorization");
     navigate("/");
   };
 
+  //Handler to navigate to add product page
   const handleAddProduct = () => {
     navigate("/add-product");
   };
+
+  //Handler to navigate to edit product page
   const handleEditProduct = async (targetProduct) => {
     try {
       const response = await axios.post(
         "http://localhost:3000/edit-product/",
         targetProduct
       );
+      //If response is successful, navigate to edit product page
       if (response.status === 201) {
         navigate("/edit-product");
         Cookies.set("jwt-token", response.data.token);
@@ -104,7 +116,10 @@ export default function GroceriesAppContainer() {
     setPostResponse("");
   };
 
+  //Handler to add quantity to a product in either cart or product list
   const handleAddQuantity = (productId, mode) => {
+    //Mode can be either 'cart' or 'product' to indicate where to add quantity
+    //If mode is cart, update quantity in cartList
     if (mode === "cart") {
       const newCartList = cartList.map((product) => {
         if (product.id === productId) {
@@ -114,6 +129,7 @@ export default function GroceriesAppContainer() {
       });
       setCartList(newCartList);
       return;
+      //If mode is product, update quantity in productQuantity
     } else if (mode === "product") {
       const newProductQuantity = productQuantity.map((product) => {
         if (product.id === productId) {
@@ -126,6 +142,7 @@ export default function GroceriesAppContainer() {
     }
   };
 
+  //Handler to remove quantity from a product in either cart or product list
   const handleRemoveQuantity = (productId, mode) => {
     if (mode === "cart") {
       const newCartList = cartList.map((product) => {
@@ -148,6 +165,7 @@ export default function GroceriesAppContainer() {
     }
   };
 
+  //Handler to delete a product from the database
   const handleDeleteProduct = async (productId) => {
     try {
       await axios
@@ -163,6 +181,7 @@ export default function GroceriesAppContainer() {
     }
   };
 
+  //Handler to add a product to the cart
   const handleAddToCart = (productId) => {
     const product = productList.find((product) => product.id === productId);
     const pQuantity = productQuantity.find(
@@ -182,14 +201,17 @@ export default function GroceriesAppContainer() {
     setCartList(newCartList);
   };
 
+  //Handler to remove a product from the cart
   const handleRemoveFromCart = (productId) => {
     const newCartList = cartList.filter((product) => product.id !== productId);
     setCartList(newCartList);
   };
 
+  //Handler to clear the cart
   const handleClearCart = () => {
     setCartList([]);
   };
+
   /////////Renderer
   return (
     <div>
@@ -199,9 +221,6 @@ export default function GroceriesAppContainer() {
         handleAddProduct={handleAddProduct}
         handleLogout={handleLogout}
       />
-      {/* <div>
-        <FilterForm handleFilterPrice={handleFilterPrice} />
-      </div> */}
       <div className="GroceriesApp-Container">
         <FilterForm handleFilterPrice={handleFilterPrice} />
         <ProductsContainer
