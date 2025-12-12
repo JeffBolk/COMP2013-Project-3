@@ -4,6 +4,7 @@ import CartContainer from "./CartContainer";
 import ProductsContainer from "./ProductsContainer";
 import NavBar from "./NavBar";
 import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 
 
@@ -13,12 +14,27 @@ export default function GroceriesAppContainer() {
   const [cartList, setCartList] = useState([]);
   const [productList, setProductList] = useState([]);
   const [postResponse, setPostResponse] = useState("");
+  const [currentUser] = useState(() => {
+    const jwtToken = Cookies.get("jwt-authorization");
+    if (!jwtToken) {
+      return "";
+    }
+    try {
+      const decodedToken = jwtDecode(jwtToken);
+      return decodedToken.username;
+    } catch {
+      return "";
+    }
+  })
 
   const navigate = useNavigate();
   //////////useEffect////////
 
   useEffect(() => {
     handleProductsFromDB();
+    if (Cookies.get("jwt-token")) {
+      Cookies.remove("jwt-token");
+    }
   }, [postResponse]);
 
   ////////Handlers//////////
@@ -38,6 +54,10 @@ export default function GroceriesAppContainer() {
     }
   };
 
+  const handleLogout = async () => {
+    Cookies.remove("jwt-authorization");
+    navigate("/");
+  }
   
   const handleAddProduct = () => {
     navigate("/add-product");
@@ -145,7 +165,7 @@ export default function GroceriesAppContainer() {
   /////////Renderer
   return (
     <div>
-      <NavBar quantity={cartList.length} handleAddProduct={handleAddProduct} />
+      <NavBar currentUser={currentUser} quantity={cartList.length} handleAddProduct={handleAddProduct} handleLogout={handleLogout} />
       <div className="GroceriesApp-Container">
         <ProductsContainer
           products={productList}
@@ -155,6 +175,7 @@ export default function GroceriesAppContainer() {
           productQuantity={productQuantity}
           handleEditProduct={handleEditProduct}
           handleDeleteProduct={handleDeleteProduct}
+          currentUser={currentUser}
         />
         <CartContainer
           cartList={cartList}

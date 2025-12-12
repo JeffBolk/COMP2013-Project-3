@@ -22,7 +22,6 @@ export default function LoginPage() {
       if (response.status === 201) {
         navigate("/main");
         Cookies.set("jwt-authorization", response.data.token);
-        Cookies.set("user", userFormData["username"]);
       }
     } catch (error) {
       setPostResponse(error.response.message || "Login Failed");

@@ -1,13 +1,13 @@
-import Cookies from "js-cookie";
-export default function NavBar({ quantity, handleAddProduct }) {
+export default function NavBar({ currentUser, quantity, handleAddProduct, handleLogout }) {
   return (
     <nav className="NavBar">
       <div className="NavDiv NavUser">
-        <h3>Hello, {Cookies.get("user")}</h3>
+        <h3>Hello, {currentUser}</h3>
+        <button onClick={handleLogout} >Logout</button>
       </div>
       <div className="NavDiv NavTitle">
         <h2>Groceries App 🍎</h2>
-        {Cookies.get("user") == "admin" ? (
+        {currentUser == "admin" ? (
                 <>
                   <button onClick={handleAddProduct} >Add product</button>
                 </>

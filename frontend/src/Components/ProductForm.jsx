@@ -7,6 +7,19 @@ export default function ProductForm() {
   const [postResponse, setPostResponse] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const navigate =useNavigate();
+  const [currentUser] = useState(() => {
+    const jwtToken = Cookies.get("jwt-authorization");
+    if (!jwtToken) {
+      return "";
+    }
+    try {
+      const decodedToken = jwtDecode(jwtToken);
+      return decodedToken.username;
+    } catch {
+      return "";
+    }
+  })
+
     const [formData, setFormData] = useState(()=>{
         const jwtToken = Cookies.get("jwt-token");
         if (!jwtToken)
@@ -50,6 +63,12 @@ export default function ProductForm() {
             navigate("/add-product");
         }
     },[isEditing]);
+
+  useEffect(() => {
+    if (currentUser != "admin") {
+      navigate("/not-authorized");
+    }
+  })
 
   const handleOnChange = (e) => {
     //console.log(e.target.value);

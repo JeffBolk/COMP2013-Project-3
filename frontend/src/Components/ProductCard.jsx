@@ -1,5 +1,4 @@
 import QuantityCounter from "./QuantityCounter";
-import Cookies from "js-cookie";
 
 export default function ProductCard({
   productName,
@@ -14,6 +13,7 @@ export default function ProductCard({
   handleEditProduct,
   _id,
   handleDeleteProduct,
+  currentUser,
 }) {
   return (
     <div className="ProductCard">
@@ -31,7 +31,7 @@ export default function ProductCard({
       <button onClick={() => handleAddToCart(id)}>Add to Cart</button>
 
       {/*Using conditional statements to verify user Cookie is Admin*/}
-      {Cookies.get("user") == "admin" ? (
+      {currentUser == "admin" ? (
         <>
           <button
             id="edit-button"
