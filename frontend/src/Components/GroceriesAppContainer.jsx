@@ -15,7 +15,7 @@ export default function GroceriesAppContainer() {
   const [productList, setProductList] = useState([]); //State to track all products
   const [postResponse, setPostResponse] = useState("");
   const [productsDisplay, setProductsDisplay] = useState([]); //New state for filtered products
-  //State to track current user
+  //State to fetch current user, if any
   const [currentUser] = useState(() => {
     const jwtToken = Cookies.get("jwt-authorization"); //get jwt token from cookies
     if (!jwtToken) {

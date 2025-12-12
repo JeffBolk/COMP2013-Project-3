@@ -8,7 +8,7 @@ export default function ProductForm() {
   const [postResponse, setPostResponse] = useState(""); //State to track post response
   const [isEditing, setIsEditing] = useState(false); //State to track if editing or adding product
   const navigate = useNavigate(); //Navigate is used to redirect user to different pages
-  //State to track current user
+  //State to fetch current user, if any
   const [currentUser] = useState(() => {
     const jwtToken = Cookies.get("jwt-authorization"); //get jwt token from cookies
     if (!jwtToken) {

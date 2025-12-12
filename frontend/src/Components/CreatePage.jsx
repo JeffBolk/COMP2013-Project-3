@@ -51,7 +51,7 @@ export default function CreatePage() {
         handleOnSubmit={handleOnSubmit}
         buttonLabel="Create User"
       />
-      <a onClick={() => navigate("/")}>Back to login page</a>
+      <Link to="/">Back to login page</Link>
     </div>
   );
 }

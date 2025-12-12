@@ -57,10 +57,7 @@ export default function LoginPage() {
         handleOnSubmit={handleOnSubmit}
         buttonLabel="Login"
       />
-      <p>
-        Not a member yet? Click{" "}
-        <a onClick={() => navigate("/create-user")}>here</a> to join!
-      </p>
+      <p>Not a member yet? Click <Link to="/create-user">here</Link> to join!</p>
     </div>
   );
 }
