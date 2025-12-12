@@ -1,10 +1,114 @@
-export default function ProductForm({
-  handleOnSubmit,
-  handleOnChange,
-  formData,
-  postResponse,
-  isEditing,
-}) {
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { jwtDecode} from "jwt-decode";
+import axios from "axios";
+import Cookies from "js-cookie";
+export default function ProductForm() {
+  const [postResponse, setPostResponse] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const navigate =useNavigate();
+    const [formData, setFormData] = useState(()=>{
+        const jwtToken = Cookies.get("jwt-token");
+        if (!jwtToken)
+        {
+            setIsEditing(false);
+            return ({
+              productName: "",
+              brand: "",
+              image: "",
+              price: "",
+              id: "",
+              _id: "",
+            });
+        }
+        try{
+            const decodedToken = jwtDecode(jwtToken);
+            setIsEditing(true);
+            return ({
+              productName: decodedToken.productName,
+              brand: decodedToken.brand,
+              image: decodedToken.image,
+              price: decodedToken.price,
+              id: decodedToken.id,
+              _id: decodedToken._id,
+            });;
+        }catch{
+            setIsEditing(false);
+            return ({
+              productName: "",
+              brand: "",
+              image: "",
+              price: "",
+              id: "",
+              _id: "",
+            });
+        }
+    });
+    useEffect(()=>{
+        if (!isEditing)
+        {
+            navigate("/add-product");
+        }
+    },[isEditing]);
+
+  const handleOnChange = (e) => {
+    //console.log(e.target.value);
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    //console.log(formData);
+  };
+
+  const handleOnSubmit = async (e) => {
+    if (isEditing) {
+      //console.log(formData)
+      e.preventDefault();
+      handleUpdateProduct();
+      setIsEditing(false);
+    } else {
+      e.preventDefault();
+      try {
+        await axios
+          .post("http://localhost:3000/add-product", formData)
+          .then((result) => {
+            setPostResponse(result.data);
+          });
+        setFormData({
+          productName: "",
+          brand: "",
+          image: "",
+          price: "",
+          id: "",
+          _id: "",
+        });
+        navigate("/main");
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+  };
+
+  const handleUpdateProduct = async () => {
+    //console.log("fuck");
+    try {
+      //console.log("fuck");
+      await axios
+        .patch("http://localhost:3000/products", formData)
+        .then((result) => {
+          setPostResponse(result.data);
+        });
+      setFormData({
+        productName: "",
+        brand: "",
+        image: "",
+        price: "",
+        id: "",
+        _id: "",
+      });
+      setIsEditing(false);
+      navigate("/main");
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   return (
     <div className="product-form">
       <h2>Product Form</h2>

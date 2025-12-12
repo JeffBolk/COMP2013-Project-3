@@ -110,6 +110,36 @@ server.post("/add-product", async (request, response) => {
     console.log(error.message);
   }
 });
+server.post("/edit-product", async (request, response) => {
+  const {price, brand, productName, image, id, _id} = request.body;
+  //console.log(price, brand, productName, image, id, _id);
+  try {
+    
+    
+    const productToken = jwt.sign({
+      productName,
+      brand,
+      image,
+      price,
+      id,
+      _id,
+    }, SECRET_KEY);
+    response.status(201).send({token: productToken})
+  } catch (error) {
+    console.log(error.message);
+  }
+});
+/*
+server.get("/products/:id", async (request,response)=>{
+    const {id}  = request.params;
+    try{
+        const contactToEdit = await Product.findById(id);
+        response.send(contactToEdit);
+    }catch(error){
+        response.status(500).send({message:error.message});
+    }
+});
+*/
 
 server.delete("/products/:id", async (request, response) => {
   const { id } = request.params;
@@ -123,19 +153,23 @@ server.delete("/products/:id", async (request, response) => {
   }
 });
 
-server.patch("/products/:id", async (request, response) => {
-  const prodId = request.params.id;
-  const { productName, brand, image, price, id } = request.body;
-
+/*
+the findById & findByIdAndUpdate continue to return NULL values and I have not been able to find a solution to this problem.
+*/
+server.patch("/products", async (request, response) => {
+  const { productName, brand, image, price, id, _id } = request.body;
+  //console.log({productName, brand, image, price, id, _id});
   try {
-    await Product.findByIdAndUpdate(prodId, {
+    console.log(await Product.findById(_id));
+    await Product.findByIdAndUpdate(_id, {
       productName,
       brand,
       image,
       price,
       id,
+      _id,
     }).then((result) =>
-      response.status(200).send(`${productName} edited\nwith id: ${prodId}`)
+      response.status(200).send(`${productName} edited\nwith id: ${_id}`)
     );
   } catch (error) {
     console.log(error.message);
