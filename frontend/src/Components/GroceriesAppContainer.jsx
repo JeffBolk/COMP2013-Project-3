@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import CartContainer from "./CartContainer";
 import ProductsContainer from "./ProductsContainer";
 import NavBar from "./NavBar";
+import Cookies from "js-cookie";
 import axios from "axios";
-import ProductForm from "./ProductForm";
+
 
 export default function GroceriesAppContainer() {
   /////////// States ///////////
@@ -11,14 +13,8 @@ export default function GroceriesAppContainer() {
   const [cartList, setCartList] = useState([]);
   const [productList, setProductList] = useState([]);
   const [postResponse, setPostResponse] = useState("");
-  const [formData, setFormData] = useState({
-    productName: "",
-    brand: "",
-    image: "",
-    price: "",
-  });
-  const [isEditing, setIsEditing] = useState(false);
 
+  const navigate = useNavigate();
   //////////useEffect////////
 
   useEffect(() => {
@@ -42,70 +38,22 @@ export default function GroceriesAppContainer() {
     }
   };
 
-  const handleOnChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  
+  const handleAddProduct = () => {
+    navigate("/add-product");
   };
-
-  const handleOnSubmit = async (e) => {
-    if (isEditing) {
-      e.preventDefault();
-      handleUpdateProduct(formData._id);
-      setIsEditing(false);
-      setFormData({
-        productName: "",
-        brand: "",
-        image: "",
-        price: "",
-      });
-    } else {
-      e.preventDefault();
-      try {
-        await axios
-          .post("http://localhost:3000/add-product", formData)
-          .then((result) => {
-            setPostResponse(result.data);
-          });
-        setFormData({
-          productName: "",
-          brand: "",
-          image: "",
-          price: "",
-        });
+  const handleEditProduct = async (product) => {
+    try {
+        const response = await axios.post("http://localhost:3000/edit-product", product);
+        if (response.status === 201)
+        {
+          navigate("/edit-product");
+          Cookies.set("jwt-token", response.data.token);
+        }
       } catch (error) {
         console.log(error.message);
       }
-    }
-  };
-
-  const handleEditProduct = (product) => {
-    setFormData({
-      productName: product.productName,
-      brand: product.brand,
-      image: product.image,
-      price: product.price,
-      _id: product._id,
-    });
-    setIsEditing(true);
     setPostResponse("");
-  };
-
-  const handleUpdateProduct = async (productId) => {
-    try {
-      await axios
-        .patch(`http://localhost:3000/products/${productId}`, formData)
-        .then((result) => {
-          setPostResponse(result.data);
-        });
-      setFormData({
-        productName: "",
-        brand: "",
-        image: "",
-        price: "",
-      });
-      setIsEditing(false);
-    } catch (error) {
-      console.log(error.message);
-    }
   };
 
   const handleAddQuantity = (productId, mode) => {
@@ -197,15 +145,8 @@ export default function GroceriesAppContainer() {
   /////////Renderer
   return (
     <div>
-      <NavBar quantity={cartList.length} />
+      <NavBar quantity={cartList.length} handleAddProduct={handleAddProduct} />
       <div className="GroceriesApp-Container">
-        <ProductForm
-          handleOnSubmit={handleOnSubmit}
-          postResponse={postResponse}
-          handleOnChange={handleOnChange}
-          formData={formData}
-          isEditing={isEditing}
-        />
         <ProductsContainer
           products={productList}
           handleAddQuantity={handleAddQuantity}

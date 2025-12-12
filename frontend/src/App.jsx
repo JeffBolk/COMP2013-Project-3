@@ -6,7 +6,7 @@ import CreatePage from "./Components/CreatePage";
 import PageNotFound from "./Components/PageNotFound";
 import NotAuthorizedPage from "./Components/NotAuthorizedPage";
 import GroceriesAppContainer from "./Components/GroceriesAppContainer";
-import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
+import ProductForm from "./Components/ProductForm";
 
 function App() {
   return (
@@ -19,8 +19,8 @@ function App() {
             path="/main"
             element={<GroceriesAppContainer products={products} />}
           />
-          {/*<Route path="/add-product" element={<PAGEHERE />} />*/}
-          {/*<Route path="/edit-product" element={<PAGEHERE />} />*/}
+          <Route path="/add-product" element={<ProductForm/>} />
+          <Route path="/edit-product" element={<ProductForm/>} />
           <Route path="/not-authorized" element={<NotAuthorizedPage />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>

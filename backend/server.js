@@ -110,6 +110,21 @@ server.post("/add-product", async (request, response) => {
     console.log(error.message);
   }
 });
+server.post("/edit-product", async (request, response) => {
+  const { productName, brand, image, price, id } = request.body;
+  try {
+    const productToken = jwt.sign({
+      productName,
+      brand,
+      image,
+      price,
+      id,
+    }, SECRET_KEY);
+    response.status(201).send({token: productToken})
+  } catch (error) {
+    console.log(error.message);
+  }
+});
 
 server.delete("/products/:id", async (request, response) => {
   const { id } = request.params;
