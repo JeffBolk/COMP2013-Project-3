@@ -29,7 +29,7 @@ export default function LoginPage() {
         Cookies.set("jwt-authorization", response.data.token); //set jwt token in cookies
       }
     } catch (error) {
-      setPostResponse(error.response.message || "Login Failed");
+        setPostResponse(error.response.data.message || "Login Failed");
     }
   };
 

@@ -30,7 +30,8 @@ export default function UserForm({
         <br />
         <button>{buttonLabel}</button>
       </form>
-      <p>{postResponse}</p>
+      {/*Used https://www.w3schools.com/react/react_css_styling.asp as a reference for React inline CSS - Jonah*/}
+      <b style={{color: "#ff0000"}}>{postResponse}</b>
     </div>
   );
 }
