@@ -18,6 +18,7 @@ export default function ProductForm() {
               image: "",
               price: "",
               id: "",
+              _id: "",
             });
         }
         try{
@@ -28,7 +29,8 @@ export default function ProductForm() {
               brand: decodedToken.brand,
               image: decodedToken.image,
               price: decodedToken.price,
-              id: decodedToken.id
+              id: decodedToken.id,
+              _id: decodedToken._id,
             });;
         }catch{
             setIsEditing(false);
@@ -38,6 +40,7 @@ export default function ProductForm() {
               image: "",
               price: "",
               id: "",
+              _id: "",
             });
         }
     });
@@ -49,21 +52,17 @@ export default function ProductForm() {
     },[isEditing]);
 
   const handleOnChange = (e) => {
+    //console.log(e.target.value);
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    //console.log(formData);
   };
 
   const handleOnSubmit = async (e) => {
     if (isEditing) {
+      //console.log(formData)
       e.preventDefault();
-      handleUpdateProduct(formData.id);
+      handleUpdateProduct();
       setIsEditing(false);
-      setFormData({
-        productName: "",
-        brand: "",
-        image: "",
-        price: "",
-        id: "",
-      });
     } else {
       e.preventDefault();
       try {
@@ -78,6 +77,7 @@ export default function ProductForm() {
           image: "",
           price: "",
           id: "",
+          _id: "",
         });
         navigate("/main");
       } catch (error) {
@@ -87,9 +87,11 @@ export default function ProductForm() {
   };
 
   const handleUpdateProduct = async () => {
+    //console.log("fuck");
     try {
+      //console.log("fuck");
       await axios
-        .patch(`http://localhost:3000/products/${formData.id}`, formData)
+        .patch("http://localhost:3000/products", formData)
         .then((result) => {
           setPostResponse(result.data);
         });
@@ -99,6 +101,7 @@ export default function ProductForm() {
         image: "",
         price: "",
         id: "",
+        _id: "",
       });
       setIsEditing(false);
       navigate("/main");

@@ -36,7 +36,7 @@ export default function ProductCard({
           <button
             id="edit-button"
             onClick={() =>
-              handleEditProduct({ price, brand, productName, image, _id })
+              handleEditProduct({ price, brand, productName, image, id, _id })
             }
           >
             Edit

@@ -42,9 +42,9 @@ export default function GroceriesAppContainer() {
   const handleAddProduct = () => {
     navigate("/add-product");
   };
-  const handleEditProduct = async (product) => {
+  const handleEditProduct = async (targetProduct) => {
     try {
-        const response = await axios.post("http://localhost:3000/edit-product", product);
+        const response = await axios.post("http://localhost:3000/edit-product/", targetProduct);
         if (response.status === 201)
         {
           navigate("/edit-product");
