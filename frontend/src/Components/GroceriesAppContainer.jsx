@@ -38,6 +38,12 @@ export default function GroceriesAppContainer() {
     }
   }, [postResponse]);
 
+  useEffect(() => {
+    if (!currentUser) {
+      navigate("/not-authorized");
+    }
+  });
+
   ////////Handlers//////////
   const initialProductQuantity = (prods) =>
     prods.map((prod) => {
