@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import CartContainer from "./CartContainer";
 import ProductsContainer from "./ProductsContainer";
 import NavBar from "./NavBar";
+import FilterForm from "./FilterForm";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
-
 
 export default function GroceriesAppContainer() {
   /////////// States ///////////
@@ -14,6 +14,7 @@ export default function GroceriesAppContainer() {
   const [cartList, setCartList] = useState([]);
   const [productList, setProductList] = useState([]);
   const [postResponse, setPostResponse] = useState("");
+  const [productsDisplay, setProductsDisplay] = useState([]); // New state for filtered products
   const [currentUser] = useState(() => {
     const jwtToken = Cookies.get("jwt-authorization");
     if (!jwtToken) {
@@ -25,7 +26,7 @@ export default function GroceriesAppContainer() {
     } catch {
       return "";
     }
-  })
+  });
 
   const navigate = useNavigate();
   //////////useEffect////////
@@ -47,6 +48,7 @@ export default function GroceriesAppContainer() {
     try {
       await axios.get("http://localhost:3000/products").then((result) => {
         setProductList(result.data);
+        setProductsDisplay(result.data); // Initialize filtered products to show all products
         setProductQuantity(initialProductQuantity(result.data));
       });
     } catch (error) {
@@ -54,25 +56,45 @@ export default function GroceriesAppContainer() {
     }
   };
 
+  //Handler to filter products by price
+  const handleFilterPrice = (e) => {
+    const maxPrice = e.target.value; //get selected price
+    //if Show All is selected
+    if (maxPrice === "all") {
+      //show all products
+      setProductsDisplay(productList);
+      //if a specific price is selected
+    } else {
+      //filter products by price
+      setProductsDisplay(
+        productList.filter(
+          (prod) => prod.price.replace("$", "") < maxPrice //convert price string to number
+        )
+      );
+    }
+  };
+
   const handleLogout = async () => {
     Cookies.remove("jwt-authorization");
     navigate("/");
-  }
-  
+  };
+
   const handleAddProduct = () => {
     navigate("/add-product");
   };
   const handleEditProduct = async (targetProduct) => {
     try {
-        const response = await axios.post("http://localhost:3000/edit-product/", targetProduct);
-        if (response.status === 201)
-        {
-          navigate("/edit-product");
-          Cookies.set("jwt-token", response.data.token);
-        }
-      } catch (error) {
-        console.log(error.message);
+      const response = await axios.post(
+        "http://localhost:3000/edit-product/",
+        targetProduct
+      );
+      if (response.status === 201) {
+        navigate("/edit-product");
+        Cookies.set("jwt-token", response.data.token);
       }
+    } catch (error) {
+      console.log(error.message);
+    }
     setPostResponse("");
   };
 
@@ -165,10 +187,20 @@ export default function GroceriesAppContainer() {
   /////////Renderer
   return (
     <div>
-      <NavBar currentUser={currentUser} quantity={cartList.length} handleAddProduct={handleAddProduct} handleLogout={handleLogout} />
+      <NavBar
+        currentUser={currentUser}
+        quantity={cartList.length}
+        handleAddProduct={handleAddProduct}
+        handleLogout={handleLogout}
+      />
+      {/* <div>
+        <FilterForm handleFilterPrice={handleFilterPrice} />
+      </div> */}
       <div className="GroceriesApp-Container">
+        <FilterForm handleFilterPrice={handleFilterPrice} />
         <ProductsContainer
-          products={productList}
+          //products={productList}
+          products={productsDisplay} //display filtered products
           handleAddQuantity={handleAddQuantity}
           handleRemoveQuantity={handleRemoveQuantity}
           handleAddToCart={handleAddToCart}

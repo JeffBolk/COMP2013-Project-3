@@ -10,6 +10,7 @@ export default function FilterForm({ handleFilterPrice }) {
           id="all"
           value="all"
           onChange={handleFilterPrice}
+          defaultChecked
         />
         <label htmlFor="all">Show All</label>
         <br />

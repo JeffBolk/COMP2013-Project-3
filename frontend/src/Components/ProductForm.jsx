@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
 export default function ProductForm() {
   const [postResponse, setPostResponse] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const navigate =useNavigate();
+  const navigate = useNavigate();
   const [currentUser] = useState(() => {
     const jwtToken = Cookies.get("jwt-authorization");
     if (!jwtToken) {
@@ -18,57 +19,55 @@ export default function ProductForm() {
     } catch {
       return "";
     }
-  })
+  });
 
-    const [formData, setFormData] = useState(()=>{
-        const jwtToken = Cookies.get("jwt-token");
-        if (!jwtToken)
-        {
-            setIsEditing(false);
-            return ({
-              productName: "",
-              brand: "",
-              image: "",
-              price: "",
-              id: "",
-              _id: "",
-            });
-        }
-        try{
-            const decodedToken = jwtDecode(jwtToken);
-            setIsEditing(true);
-            return ({
-              productName: decodedToken.productName,
-              brand: decodedToken.brand,
-              image: decodedToken.image,
-              price: decodedToken.price,
-              id: decodedToken.id,
-              _id: decodedToken._id,
-            });;
-        }catch{
-            setIsEditing(false);
-            return ({
-              productName: "",
-              brand: "",
-              image: "",
-              price: "",
-              id: "",
-              _id: "",
-            });
-        }
-    });
-    useEffect(()=>{
-        if (!isEditing)
-        {
-            navigate("/add-product");
-        }
-    },[isEditing]);
+  const [formData, setFormData] = useState(() => {
+    const jwtToken = Cookies.get("jwt-token");
+    if (!jwtToken) {
+      setIsEditing(false);
+      return {
+        productName: "",
+        brand: "",
+        image: "",
+        price: "",
+        id: "",
+        _id: "",
+      };
+    }
+    try {
+      const decodedToken = jwtDecode(jwtToken);
+      setIsEditing(true);
+      return {
+        productName: decodedToken.productName,
+        brand: decodedToken.brand,
+        image: decodedToken.image,
+        price: decodedToken.price,
+        id: decodedToken.id,
+        _id: decodedToken._id,
+      };
+    } catch {
+      setIsEditing(false);
+      return {
+        productName: "",
+        brand: "",
+        image: "",
+        price: "",
+        id: "",
+        _id: "",
+      };
+    }
+  });
+  useEffect(() => {
+    if (!isEditing) {
+      navigate("/add-product");
+    }
+  }, [isEditing]);
 
   useEffect(() => {
     if (currentUser != "admin") {
       navigate("/not-authorized");
     }
-  })
+  });
 
   const handleOnChange = (e) => {
     //console.log(e.target.value);
@@ -106,9 +105,7 @@ export default function ProductForm() {
   };
 
   const handleUpdateProduct = async () => {
-    //console.log("fuck");
     try {
-      //console.log("fuck");
       await axios
         .patch("http://localhost:3000/products", formData)
         .then((result) => {
@@ -173,6 +170,7 @@ export default function ProductForm() {
         <br />
         <button type="submit">{isEditing ? "Edit" : "Submit"}</button>
       </form>
+      <Link to="/main">Back to Main Page</Link>
       {postResponse && <p>{postResponse}</p>}
     </div>
   );
